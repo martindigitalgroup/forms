@@ -30,53 +30,53 @@
   </style>
 </head>
 <body>
+  <!-- Options container -->
   <div id="responses">
     <div class="option" onclick="selectOption('Excited')">Excited</div>
     <div class="option" onclick="selectOption('Neutral')">Neutral</div>
     <div class="option" onclick="selectOption('Disappointed')">Disappointed</div>
   </div>
   
-  <!-- The Submit button is a link to the thank-you page -->
+  <!-- Submit button that appears after an option is selected -->
   <a id="submitButton" href="https://new-interface-5921e2.zapier.app/thank-you">Submit</a>
   
   <script>
-    // Called when a user selects an option
+    // Function called when an option is clicked
     function selectOption(response) {
       console.log("Selected response:", response);
       
-      // Send the webhook recording the user's response.
+      // Send the webhook (in the background)
       sendWebhook(response);
       
-      // Reveal the Submit button so the user can navigate to the thank-you page.
+      // Hide the options container
+      document.getElementById("responses").style.display = "none";
+      
+      // Show the Submit button
       document.getElementById("submitButton").style.display = "inline-block";
     }
     
-    // Sends the webhook using URL-encoded form data.
+    // Sends the webhook using URL-encoded form data
     function sendWebhook(response) {
       const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/";
       
-      // Build URL-encoded form data.
+      // Build URL-encoded form data
       const formData = new URLSearchParams();
       formData.append('response', response);
       
+      // The fetch call sends the webhook using POST with a "simple" content type.
       fetch(webhookUrl, {
         method: "POST",
-        // Pass the URLSearchParams object directly so the browser sets the
-        // Content-Type header to "application/x-www-form-urlencoded;charset=UTF-8".
         body: formData,
       })
       .then((res) => {
         if (res.ok) {
           console.log("Webhook sent successfully!");
-          // Note: We no longer perform any navigation here.
         } else {
           console.error("Failed to send webhook");
-          // Optionally, update the UI to notify the user of the error.
         }
       })
       .catch((err) => {
         console.error("Error sending webhook:", err);
-        // Optionally, update the UI to notify the user of the error.
       });
     }
   </script>
