@@ -26,29 +26,31 @@
 
   <script>
     function sendWebhook(response) {
-      // Your Zapier Webhook URL
       const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/"; // Replace with your Zapier webhook URL
+      
+      // Use URLSearchParams to encode form data
+      const formData = new URLSearchParams();
+      formData.append('response', response);
 
-      // Send a POST request with the response
       fetch(webhookUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ response: response }),
+        // Note: Do not set the Content-Type header manually. The browser will set it to "application/x-www-form-urlencoded;charset=UTF-8"
+        body: formData.toString(),
       })
-        .then((res) => {
-          if (res.ok) {
-            console.log("Webhook sent successfully!");
-            // Redirect the entire browser window to the Thank You page
-            window.top.location.href = "https://new-interface-5921e2.zapier.app/thank-you";
-          } else {
-            console.error("Failed to send webhook");
-            alert("Something went wrong. Please try again.");
-          }
-        })
-        .catch((err) => {
-          console.error("Error:", err);
-          alert("An error occurred. Please try again.");
-        });
+      .then((res) => {
+        if (res.ok) {
+          console.log("Webhook sent successfully!");
+          // Redirect the entire browser window to the Thank You page
+          window.top.location.href = "https://new-interface-5921e2.zapier.app/thank-you";
+        } else {
+          console.error("Failed to send webhook");
+          // Consider updating the UI with an error message instead of using alert() if modals are restricted.
+        }
+      })
+      .catch((err) => {
+        console.error("Error:", err);
+        // Consider updating the UI with an error message instead of using alert()
+      });
     }
   </script>
 </body>
