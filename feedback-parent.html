@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Feedback</title>
   <style>
-    /* Styling for the option buttons */
+    /* Styling for the response options */
     .option {
       display: inline-block;
       margin: 10px;
@@ -30,43 +30,57 @@
   </style>
 </head>
 <body>
-  <!-- Options container -->
+  <!-- Container for the response options -->
   <div id="responses">
     <div class="option" onclick="selectOption('Excited')">Excited</div>
     <div class="option" onclick="selectOption('Neutral')">Neutral</div>
     <div class="option" onclick="selectOption('Disappointed')">Disappointed</div>
   </div>
   
-  <!-- Submit button that appears after an option is selected -->
+  <!-- Submit button that appears after selecting an option -->
   <a id="submitButton" href="https://new-interface-5921e2.zapier.app/thank-you">Submit</a>
   
   <script>
-    // Function called when an option is clicked
+    /**
+     * Called when an option is clicked.
+     * @param {string} response - The selected response.
+     */
     function selectOption(response) {
       console.log("Selected response:", response);
       
-      // Send the webhook (in the background)
+      // Send the webhook with the response and any URL parameters.
       sendWebhook(response);
       
-      // Hide the options container
+      // Hide the options container.
       document.getElementById("responses").style.display = "none";
       
-      // Show the Submit button
+      // Show the Submit button.
       document.getElementById("submitButton").style.display = "inline-block";
     }
     
-    // Sends the webhook using URL-encoded form data
+    /**
+     * Sends a POST request (webhook) to Zapier with the selected response and URL parameters.
+     * @param {string} response - The user's selected response.
+     */
     function sendWebhook(response) {
       const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/";
       
-      // Build URL-encoded form data
+      // Create URL-encoded form data.
       const formData = new URLSearchParams();
       formData.append('response', response);
       
-      // The fetch call sends the webhook using POST with a "simple" content type.
+      // Parse URL query parameters (e.g. ?site=ABC&location=your_mums_house&craft_group=midwifery)
+      const urlParams = new URLSearchParams(window.location.search);
+      urlParams.forEach((value, key) => {
+        formData.append(key, value);
+      });
+      
+      // Send the POST request.
       fetch(webhookUrl, {
         method: "POST",
-        body: formData,
+        // Passing the URLSearchParams object directly lets the browser set
+        // the Content-Type header to "application/x-www-form-urlencoded;charset=UTF-8"
+        body: formData
       })
       .then((res) => {
         if (res.ok) {
