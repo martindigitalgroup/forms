@@ -10,6 +10,7 @@
       background-color: #e0e0e0;
       border-radius: 5px;
       cursor: pointer;
+      text-align: center;
     }
     .option:hover {
       background-color: #d0d0d0;
@@ -26,7 +27,7 @@
   <script>
     function sendWebhook(response) {
       // Your Zapier Webhook URL
-      const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/"; // Replace with your Zapier URL
+      const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/"; // Replace with your Zapier webhook URL
 
       // Send a POST request with the response
       fetch(webhookUrl, {
@@ -37,13 +38,17 @@
         .then((res) => {
           if (res.ok) {
             console.log("Webhook sent successfully!");
-            // Optionally navigate to a "Thank You" or confirmation page
+            // Redirect to the Thank You page
             window.location.href = "https://new-interface-5921e2.zapier.app/thank-you";
           } else {
             console.error("Failed to send webhook");
+            alert("Something went wrong. Please try again.");
           }
         })
-        .catch((err) => console.error("Error:", err));
+        .catch((err) => {
+          console.error("Error:", err);
+          alert("An error occurred. Please try again.");
+        });
     }
   </script>
 </body>
