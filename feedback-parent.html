@@ -18,15 +18,32 @@
 </head>
 <body>
   <div id="responses">
-    <div class="option" onclick="sendResponse('Excited')">Excited</div>
-    <div class="option" onclick="sendResponse('Neutral')">Neutral</div>
-    <div class="option" onclick="sendResponse('Disappointed')">Disappointed</div>
+    <div class="option" onclick="sendWebhook('Excited')">Excited</div>
+    <div class="option" onclick="sendWebhook('Neutral')">Neutral</div>
+    <div class="option" onclick="sendWebhook('Disappointed')">Disappointed</div>
   </div>
 
   <script>
-    function sendResponse(response) {
-      // Send the selected response to the parent window
-      window.parent.postMessage({ field: 'response', value: response }, '*');
+    function sendWebhook(response) {
+      // Your Zapier Webhook URL
+      const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/"; // Replace with your Zapier URL
+
+      // Send a POST request with the response
+      fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ response: response }),
+      })
+        .then((res) => {
+          if (res.ok) {
+            console.log("Webhook sent successfully!");
+            // Optionally navigate to a "Thank You" or confirmation page
+            window.location.href = "https://new-interface-5921e2.zapier.app/thank-you";
+          } else {
+            console.error("Failed to send webhook");
+          }
+        })
+        .catch((err) => console.error("Error:", err));
     }
   </script>
 </body>
