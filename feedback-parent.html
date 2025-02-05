@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
+  <title>Feedback</title>
   <style>
     /* Basic styling for your interactive options */
     .option {
@@ -26,30 +28,31 @@
 
   <script>
     function sendWebhook(response) {
-      const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/"; // Replace with your Zapier webhook URL
+      const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/";
       
-      // Use URLSearchParams to encode form data
+      // Create a URLSearchParams object to encode the data as URL-encoded form data.
       const formData = new URLSearchParams();
       formData.append('response', response);
 
+      // Use fetch with POST; passing the URLSearchParams object directly ensures the browser sets the
+      // Content-Type to "application/x-www-form-urlencoded;charset=UTF-8", which qualifies as a “simple” header.
       fetch(webhookUrl, {
         method: "POST",
-        // Note: Do not set the Content-Type header manually. The browser will set it to "application/x-www-form-urlencoded;charset=UTF-8"
-        body: formData.toString(),
+        body: formData,
       })
       .then((res) => {
         if (res.ok) {
           console.log("Webhook sent successfully!");
-          // Redirect the entire browser window to the Thank You page
+          // Redirect the entire browser window to the Thank You page.
           window.top.location.href = "https://new-interface-5921e2.zapier.app/thank-you";
         } else {
           console.error("Failed to send webhook");
-          // Consider updating the UI with an error message instead of using alert() if modals are restricted.
+          // Optionally, update the UI to inform the user of the error.
         }
       })
       .catch((err) => {
         console.error("Error:", err);
-        // Consider updating the UI with an error message instead of using alert()
+        // Optionally, update the UI to inform the user of the error.
       });
     }
   </script>
