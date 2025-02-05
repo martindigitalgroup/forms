@@ -38,8 +38,7 @@
         .then((res) => {
           if (res.ok) {
             console.log("Webhook sent successfully!");
-            // Redirect to the Thank You page.
-            // Use window.top.location.href if you want to break out of the iframe:
+            // Redirect the entire browser window to the Thank You page
             window.top.location.href = "https://new-interface-5921e2.zapier.app/thank-you";
           } else {
             console.error("Failed to send webhook");
