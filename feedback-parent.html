@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Feedback</title>
   <style>
-    /* Basic styling for your interactive options */
+    /* Styling for the option buttons */
     .option {
       display: inline-block;
       margin: 10px;
@@ -17,42 +17,70 @@
     .option:hover {
       background-color: #d0d0d0;
     }
+    /* Styling for the Submit button (initially hidden) */
+    #submitButton {
+      display: none;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #2563EB;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
   <div id="responses">
-    <div class="option" onclick="sendWebhook('Excited')">Excited</div>
-    <div class="option" onclick="sendWebhook('Neutral')">Neutral</div>
-    <div class="option" onclick="sendWebhook('Disappointed')">Disappointed</div>
+    <div class="option" onclick="selectOption('Excited')">Excited</div>
+    <div class="option" onclick="selectOption('Neutral')">Neutral</div>
+    <div class="option" onclick="selectOption('Disappointed')">Disappointed</div>
   </div>
-
+  
+  <!-- This Submit button appears once an option is selected -->
+  <a id="submitButton" href="https://new-interface-5921e2.zapier.app/thank-you">Submit</a>
+  
   <script>
+    var selectedResponse = null;
+    
+    // Called when a user clicks on an option.
+    function selectOption(response) {
+      selectedResponse = response;
+      console.log("Selected response:", response);
+      
+      // Optionally, you could add UI feedback here (e.g., highlighting the selected option)
+      
+      // Send the webhook to record the user's response.
+      sendWebhook(response);
+      
+      // Reveal the Submit button so the user can proceed.
+      document.getElementById("submitButton").style.display = "inline-block";
+    }
+    
+    // Sends the webhook using a URL-encoded form data payload.
     function sendWebhook(response) {
       const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/";
       
-      // Create a URLSearchParams object to encode the data as URL-encoded form data.
+      // Create URL-encoded form data.
       const formData = new URLSearchParams();
       formData.append('response', response);
-
-      // Use fetch with POST; passing the URLSearchParams object directly ensures the browser sets the
-      // Content-Type to "application/x-www-form-urlencoded;charset=UTF-8", which qualifies as a “simple” header.
+      
       fetch(webhookUrl, {
         method: "POST",
+        // Passing the URLSearchParams object directly allows the browser to automatically
+        // set the Content-Type header to application/x-www-form-urlencoded;charset=UTF-8.
         body: formData,
       })
       .then((res) => {
         if (res.ok) {
           console.log("Webhook sent successfully!");
-          // Redirect the entire browser window to the Thank You page.
-          window.top.location.href = "https://new-interface-5921e2.zapier.app/thank-you";
         } else {
           console.error("Failed to send webhook");
-          // Optionally, update the UI to inform the user of the error.
+          // Optionally, update the UI to inform the user.
         }
       })
       .catch((err) => {
-        console.error("Error:", err);
-        // Optionally, update the UI to inform the user of the error.
+        console.error("Error sending webhook:", err);
+        // Optionally, update the UI to inform the user.
       });
     }
   </script>
