@@ -1,95 +1,142 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Feedback</title>
   <style>
-    /* Styling for the response options */
-    .option {
-      display: inline-block;
-      margin: 10px;
-      padding: 10px;
-      background-color: #e0e0e0;
-      border-radius: 5px;
-      cursor: pointer;
+    /* General styling */
+    body {
+      font-family: Arial, sans-serif;
       text-align: center;
+      margin: 20px;
     }
-    .option:hover {
-      background-color: #d0d0d0;
+
+    #responses {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
     }
-    /* Styling for the Submit button (initially hidden) */
+
+    /* Styling for each SVG button */
+    .feedback-option {
+      width: 80px;
+      height: 80px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .feedback-option:hover {
+      transform: scale(1.1);
+    }
+
+    .selected {
+      background-color: #d4f4dd;
+      border-radius: 50%;
+    }
+
+    /* Submit button */
     #submitButton {
       display: none;
       margin-top: 20px;
       padding: 10px 20px;
       background-color: #2563EB;
       color: #fff;
-      text-decoration: none;
+      border: none;
       border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    #submitButton:hover {
+      background-color: #1e4db7;
+      transform: scale(1.05);
+    }
+
+    #submitButton:disabled {
+      background-color: #b3c6f3;
+      cursor: not-allowed;
     }
   </style>
 </head>
 <body>
-  <!-- Container for the response options -->
-  <div id="responses">
-    <div class="option" onclick="selectOption('Excited')">Excited</div>
-    <div class="option" onclick="selectOption('Neutral')">Neutral</div>
-    <div class="option" onclick="selectOption('Disappointed')">Disappointed</div>
+  <h1>How are you feeling today?</h1>
+
+  <!-- Container for SVG buttons -->
+  <div id="responses" role="group" aria-label="Feedback options">
+    <div id="crying" class="feedback-option" onclick="selectResponse('Crying')" aria-label="Crying">
+      <!-- Insert SVG for Crying here -->
+    </div>
+    <div id="sad" class="feedback-option" onclick="selectResponse('Sad')" aria-label="Sad">
+      <!-- Insert SVG for Sad here -->
+    </div>
+    <div id="neutral" class="feedback-option" onclick="selectResponse('Neutral')" aria-label="Neutral">
+      <!-- Insert SVG for Neutral here -->
+    </div>
+    <div id="happy" class="feedback-option" onclick="selectResponse('Happy')" aria-label="Happy">
+      <!-- Insert SVG for Happy here -->
+    </div>
+    <div id="excited" class="feedback-option" onclick="selectResponse('Excited')" aria-label="Excited">
+      <!-- Insert SVG for Excited here -->
+    </div>
   </div>
-  
-  <!-- Submit button that appears after selecting an option -->
-  <a id="submitButton" href="https://phasefour.zapier.app/thank-you">Submit</a>
-  
+
+  <!-- Submit button -->
+  <button id="submitButton" onclick="submitResponse()" disabled>Submit</button>
+
   <script>
-    /**
-     * Called when an option is clicked.
-     * @param {string} response - The selected response.
-     */
-    function selectOption(response) {
-      console.log("Selected response:", response);
-      
-      // Send the webhook with the response and any URL parameters.
-      sendWebhook(response);
-      
-      // Hide the options container.
-      document.getElementById("responses").style.display = "none";
-      
-      // Show the Submit button.
-      document.getElementById("submitButton").style.display = "inline-block";
+    let selectedResponse = null;
+
+    function selectResponse(response) {
+      // Clear previous selection
+      document.querySelectorAll('.feedback-option').forEach(option => {
+        option.classList.remove('selected');
+      });
+
+      // Mark the selected option
+      selectedResponse = response;
+      document.getElementById(response.toLowerCase()).classList.add('selected');
+
+      // Enable the Submit button
+      const submitButton = document.getElementById('submitButton');
+      submitButton.disabled = false;
+      submitButton.style.display = 'inline-block';
     }
-    
-    /**
-     * Sends a POST request (webhook) to Zapier with the selected response and URL parameters.
-     * @param {string} response - The user's selected response.
-     */
-    function sendWebhook(response) {
+
+    function submitResponse() {
+      if (!selectedResponse) {
+        alert("Please select a response before submitting.");
+        return;
+      }
+
       const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/";
-      
-      // Create URL-encoded form data.
       const formData = new URLSearchParams();
-      formData.append('response', response);
-      
-      // Parse URL query parameters (e.g. ?site=ABC&location=your_mums_house&craft_group=midwifery)
+      formData.append('response', selectedResponse);
+
+      // Parse URL query parameters and add them to the webhook data
       const urlParams = new URLSearchParams(window.location.search);
       urlParams.forEach((value, key) => {
         formData.append(key, value);
       });
-      
-      // Send the POST request.
+
+      // Send the POST request
       fetch(webhookUrl, {
         method: "POST",
-        // Passing the URLSearchParams object directly lets the browser set
-        // the Content-Type header to "application/x-www-form-urlencoded;charset=UTF-8"
         body: formData
       })
-      .then((res) => {
-        if (res.ok) {
+      .then(response => {
+        if (response.ok) {
+          alert("Your feedback has been submitted. Thank you!");
           console.log("Webhook sent successfully!");
         } else {
+          alert("There was an issue submitting your feedback. Please try again.");
           console.error("Failed to send webhook");
         }
       })
-      .catch((err) => {
+      .catch(err => {
+        alert("An error occurred while submitting your feedback.");
         console.error("Error sending webhook:", err);
       });
     }
