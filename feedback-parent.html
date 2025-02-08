@@ -7,10 +7,11 @@
   <style>
     /* General styling */
     body {
-      font-family: Arial, sans-serif;
+      font-family: Calibri, sans-serif;
       text-align: center;
       margin: 20px;
       position: relative;
+      color: #3f3f3f;
     }
 
     #responses {
@@ -87,7 +88,7 @@
   </style>
 </head>
 <body>
-  <h1>How are you feeling about the EMR?</h1>
+  <h1>How are you feeling about the EMR coming to your site?</h1>
 
   <div id="responses">
     <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 840 437">
@@ -179,7 +180,6 @@
         document.querySelectorAll('.feedback-option').forEach(option => {
           option.classList.remove('selected', 'grayscale');
         });
-
         const submitButton = document.getElementById('submitButton');
         submitButton.disabled = true;
         return;
@@ -214,16 +214,20 @@
       }
 
       const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/";
+      // Use URLSearchParams for a URL-encoded payload.
       const formData = new URLSearchParams();
       formData.append('response', selectedResponse);
 
-      // Use window.location.search (assuming the parent passed query parameters to the iframe's URL)
+      // Package up the query parameters into an object.
       const urlParams = new URLSearchParams(window.location.search);
+      let qsObj = {};
       urlParams.forEach((value, key) => {
-        formData.append(key, value);
+        qsObj[key] = value;
       });
+      // Append the querystring as a JSON string.
+      formData.append('querystring', JSON.stringify(qsObj));
 
-      // Send the POST request
+      // Send the POST request.
       fetch(webhookUrl, {
         method: "POST",
         body: formData
@@ -231,13 +235,12 @@
       .then(response => {
         if (response.ok) {
           console.log("Webhook sent successfully!");
-          // Build the redirect URL and append query parameters and the selected response
+          // Build the redirect URL (adding the query parameters and selected response)
           const redirectUrl = new URL("https://phasefour.zapier.app/thank-you");
           urlParams.forEach((value, key) => {
             redirectUrl.searchParams.append(key, value);
           });
           redirectUrl.searchParams.append('response', selectedResponse);
-          // Redirect the current window (the iframe) to the thank-you page
           window.location.href = redirectUrl.toString();
         } else {
           alert("There was an issue submitting your feedback. Please try again.");
