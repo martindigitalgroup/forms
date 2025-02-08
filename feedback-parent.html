@@ -4,12 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Feedback</title>
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="Expansion-Favicon.png" />
   <style>
     /* General styling */
     body {
-      font-family: Calibri, sans-serif;
+      font-family: Arial, sans-serif; /* Calibri fallback */
       text-align: center;
       margin: 20px;
       position: relative;
@@ -17,7 +15,6 @@
       background-color: #D2DBDB; /* Page background */
     }
 
-    /* Extra padding above the title */
     h1 {
       padding-top: 30px;
     }
@@ -28,10 +25,12 @@
       max-width: 600px;
       margin: 0 auto;
       padding: 15px;
-      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    /* Ensure the SVG is centered horizontally on larger screens */
+    /* Ensure the SVG is centered horizontally */
     #responses svg {
       display: block;
       margin: 0 auto;
@@ -45,12 +44,12 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        min-width: 320px;
       }
       #responses svg {
-        width: 100%;      /* Ensure the SVG scales to full container width */
-        max-width: 600px; /* Or adjust as needed */
+        width: 100%;
+        max-width: 320px; /* Ensure it doesn’t exceed mobile screen width */
         height: auto;
-        flex-shrink: 0;   /* Prevent the SVG from shrinking */
       }
     }
 
@@ -104,7 +103,7 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      font-family: Calibri, sans-serif;
+      font-family: Arial, sans-serif; /* Fallback */
       font-size: 15pt;
       font-weight: bold;
       transition: background-color 0.2s ease, transform 0.2s ease;
@@ -129,12 +128,24 @@
     <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 840 437">
       <defs>
         <style>
-          .cls-1 { fill: #d1edef; }
-          .cls-2 { fill: #3f3f3f; }
-          .cls-3 { fill: #65bfc6; }
-          .cls-4 { fill: #b8e2e6; }
-          .cls-5 { fill: #88ced3; }
-          .cls-6 { fill: #effafb; }
+          .cls-1 {
+            fill: #d1edef;
+          }
+          .cls-2 {
+            fill: #3f3f3f;
+          }
+          .cls-3 {
+            fill: #65bfc6;
+          }
+          .cls-4 {
+            fill: #b8e2e6;
+          }
+          .cls-5 {
+            fill: #88ced3;
+          }
+          .cls-6 {
+            fill: #effafb;
+          }
         </style>
       </defs>
       <g id="Layer_1-2" data-name="Layer 1">
@@ -188,6 +199,7 @@
     </svg>
   </div>
 
+
   <!-- Submit button -->
   <button id="submitButton" onclick="submitResponse()" disabled>Submit</button>
 
@@ -195,7 +207,6 @@
     // Update the heading based on the URL query parameter "site"
     document.addEventListener("DOMContentLoaded", () => {
       const params = new URLSearchParams(window.location.search);
-      // Use the "site" parameter if it exists; default to "your site"
       const siteName = params.get("site") || "your site";
       const heading = document.getElementById("mainHeading");
       heading.textContent = `How are you feeling about the EMR coming to ${siteName}?`;
@@ -206,7 +217,6 @@
     function selectResponse(response) {
       const selectedGroup = document.getElementById(response.toLowerCase());
       
-      // Toggle deselection if clicking the same option.
       if (selectedResponse === response) {
         selectedResponse = null;
         document.querySelectorAll('.feedback-option').forEach(option => {
@@ -215,24 +225,20 @@
         document.getElementById('submitButton').disabled = true;
         return;
       }
-      
-      // Clear previous selection.
+
       document.querySelectorAll('.feedback-option').forEach(option => {
         option.classList.remove('selected', 'grayscale');
       });
-      
-      // Mark the selected option.
+
       selectedResponse = response;
       selectedGroup.classList.add('selected');
-      
-      // Apply grayscale to non-selected options.
+
       document.querySelectorAll('.feedback-option').forEach(option => {
         if (!option.classList.contains('selected')) {
           option.classList.add('grayscale');
         }
       });
-      
-      // Enable the Submit button.
+
       const submitButton = document.getElementById('submitButton');
       submitButton.disabled = false;
       submitButton.style.display = 'inline-block';
@@ -247,16 +253,13 @@
       const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/";
       const formData = new URLSearchParams();
   
-      // Append the selected response.
       formData.append('response', selectedResponse);
   
-      // Parse URL query parameters and append each individually.
       const urlParams = new URLSearchParams(window.location.search);
       urlParams.forEach((value, key) => {
         formData.append(key, value);
       });
   
-      // Send the POST request.
       fetch(webhookUrl, {
         method: "POST",
         body: formData
@@ -264,7 +267,6 @@
       .then(response => {
         if (response.ok) {
           console.log("Webhook sent successfully!");
-          // Build the redirect URL and append the same query parameters.
           const redirectUrl = new URL("https://phasefour.zapier.app/thank-you");
           urlParams.forEach((value, key) => {
             redirectUrl.searchParams.append(key, value);
