@@ -55,6 +55,8 @@
       font-size: 15pt;
       font-weight: bold;
       transition: background-color 0.2s ease, transform 0.2s ease;
+      /* Disable tap highlight */
+      -webkit-tap-highlight-color: transparent;
     }
 
     #submitButton:hover {
@@ -113,52 +115,48 @@
         align-items: center;
         justify-content: center;
         min-height: 300px;  /* Ensure enough vertical space */
-        transform: translateX(-3.6vw);  /* Shift container 3.6% left */
+        transform: translateX(-3.6vw);  /* Offset container 3.6% to the left */
       }
       #responses svg {
-        width: 100%;        /* Use 100% of the container width */
+        width: 100%;        /* Use 100% of container width */
         max-width: 600px;
         height: auto;
         flex-shrink: 0;
       }
-      /* Remove absolute positioning from the submit button on mobile */
+      /* Remove absolute positioning for the submit button on mobile */
       #submitButton {
-        position: relative;
+        position: center;
         top: auto;
         left: auto;
         transform: none;
-        margin: 20px auto 0 auto; /* Place below the SVG with some top margin */
+        margin: 0px auto 0 auto; /* Place below the SVG with some top margin */
         display: block;
+      }
+      /* Override active state to prevent jump on tap */
+      #submitButton:active {
+        transform: none !important;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Dynamic heading updated via JavaScript -->
+  <!-- Dynamic heading will be updated via JavaScript -->
   <h1 id="mainHeading">How are you feeling about the EMR coming to your site?</h1>
 
   <div id="responses">
-    <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 840 437">
+    <!-- The SVG includes preserveAspectRatio to center its internal content -->
+    <svg id="Layer_2" data-name="Layer 2" 
+         xmlns="http://www.w3.org/2000/svg" 
+         viewBox="-20 -20 840 437" 
+         preserveAspectRatio="xMidYMid meet">
       <defs>
         <style>
-          .cls-1 {
-            fill: #d1edef;
-          }
-          .cls-2 {
-            fill: #3f3f3f;
-          }
-          .cls-3 {
-            fill: #65bfc6;
-          }
-          .cls-4 {
-            fill: #b8e2e6;
-          }
-          .cls-5 {
-            fill: #88ced3;
-          }
-          .cls-6 {
-            fill: #effafb;
-          }
+          .cls-1 { fill: #d1edef; }
+          .cls-2 { fill: #3f3f3f; }
+          .cls-3 { fill: #65bfc6; }
+          .cls-4 { fill: #b8e2e6; }
+          .cls-5 { fill: #88ced3; }
+          .cls-6 { fill: #effafb; }
         </style>
       </defs>
       <g id="Layer_1-2" data-name="Layer 1">
