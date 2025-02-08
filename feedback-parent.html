@@ -4,62 +4,139 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Feedback</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="Expansion-Favicon.png" />
   <style>
+    /* General styling */
     body {
       font-family: Calibri, sans-serif;
       text-align: center;
       margin: 20px;
+      position: relative;
       color: #3f3f3f;
-      background-color: #D2DBDB;
+      background-color: #D2DBDB; /* Page background */
     }
-    
+
+    /* Extra padding above the title */
     h1 {
       padding-top: 30px;
     }
-    
-    /* Container for SVG feedback options */
+
+    /* Container for the SVG feedback options */
     #responses {
       width: 100%;
       max-width: 600px;
       margin: 0 auto;
       padding: 15px;
+      position: relative;
     }
-    
+
+    /* Ensure the SVG is centered horizontally */
     #responses svg {
       display: block;
       margin: 0 auto;
       max-width: 100%;
       height: auto;
     }
-    
-    /* Simplified submit button styling */
+
+    /* Desktop Submit button styling */
     #submitButton {
-      display: block;
-      margin: 20px auto; /* centers the button */
+      position: absolute;
+      top: calc(50% + 120px);
+      left: 50%;
+      transform: translate(-50%, -50%);
       padding: 10px 20px;
       background-color: #2DAAB3;
       color: #fff;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      font-family: Calibri, sans-serif;
       font-size: 15pt;
       font-weight: bold;
-      transition: background-color 0.2s ease;
-      /* Remove any transform to prevent jumps */
+      transition: background-color 0.2s ease, transform 0.2s ease;
     }
-    
+
     #submitButton:hover {
       background-color: #5CCED6;
+      transform: translate(-50%, -50%) scale(1.05);
     }
-    
+
     #submitButton:disabled {
       background-color: #A4B5B6;
       cursor: not-allowed;
     }
+
+    /* SVG and feedback option styles */
+    .feedback-option {
+      transform-origin: center;
+      transition: transform 0.2s ease;
+    }
+
+    .feedback-option path {
+      cursor: pointer;
+    }
+
+    .feedback-option:hover {
+      transform: scale(1.02) translate(0%, -1%);
+    }
+
+    .feedback-option.selected path:not(.cls-2) {
+      fill: #d4f4dd;
+    }
+
+    .feedback-option.grayscale#crying path:not(.cls-2) {
+      filter: grayscale(100%) brightness(59%);
+    }
+
+    .feedback-option.grayscale#sad path:not(.cls-2) {
+      filter: grayscale(100%) brightness(68%);
+    }
+
+    .feedback-option.grayscale#neutral path:not(.cls-2) {
+      filter: grayscale(100%) brightness(81%);
+    }
+
+    .feedback-option.grayscale#happy path:not(.cls-2) {
+      filter: grayscale(100%) brightness(88%);
+    }
+
+    .feedback-option.grayscale#excited path:not(.cls-2) {
+      filter: grayscale(100%) brightness(96%);
+    }
+
+    /* Mobile-specific adjustments */
+    @media only screen and (max-width: 600px) {
+      #responses {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;  /* Ensure enough vertical space */
+        transform: translateX(-3.6vw);  /* Shift container 3.6% left */
+      }
+      #responses svg {
+        width: 100%;        /* Use 100% of the container width */
+        max-width: 600px;
+        height: auto;
+        flex-shrink: 0;
+      }
+      /* Remove absolute positioning from the submit button on mobile */
+      #submitButton {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        margin: 20px auto 0 auto; /* Place below the SVG with some top margin */
+        display: block;
+      }
+    }
   </style>
 </head>
 <body>
+  <!-- Dynamic heading updated via JavaScript -->
   <h1 id="mainHeading">How are you feeling about the EMR coming to your site?</h1>
+
   <div id="responses">
     <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 840 437">
       <defs>
@@ -135,21 +212,23 @@
     </svg>
   </div>
 
+  <!-- Submit button -->
   <button id="submitButton" onclick="submitResponse()" disabled>Submit</button>
-  
+
   <script>
-    // Update heading based on URL query parameter "site"
+    // Update the heading based on the URL query parameter "site"
     document.addEventListener("DOMContentLoaded", () => {
       const params = new URLSearchParams(window.location.search);
       const siteName = params.get("site") || "your site";
       document.getElementById("mainHeading").textContent = `How are you feeling about the EMR coming to ${siteName}?`;
     });
-    
+
     let selectedResponse = null;
-    
+
     function selectResponse(response) {
       const selectedGroup = document.getElementById(response.toLowerCase());
       
+      // Toggle deselection if clicking the same option.
       if (selectedResponse === response) {
         selectedResponse = null;
         document.querySelectorAll('.feedback-option').forEach(option => {
@@ -159,6 +238,7 @@
         return;
       }
       
+      // Clear previous selection.
       document.querySelectorAll('.feedback-option').forEach(option => {
         option.classList.remove('selected', 'grayscale');
       });
@@ -166,17 +246,19 @@
       selectedResponse = response;
       selectedGroup.classList.add('selected');
       
+      // Apply grayscale to non-selected options.
       document.querySelectorAll('.feedback-option').forEach(option => {
         if (!option.classList.contains('selected')) {
           option.classList.add('grayscale');
         }
       });
       
+      // Enable the Submit button.
       const submitButton = document.getElementById('submitButton');
       submitButton.disabled = false;
       submitButton.style.display = 'inline-block';
     }
-    
+
     function submitResponse() {
       if (!selectedResponse) {
         alert("Please select a response before submitting.");
@@ -185,19 +267,25 @@
   
       const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/";
       const formData = new URLSearchParams();
+  
+      // Append the selected response.
       formData.append('response', selectedResponse);
-      
+  
+      // Parse URL query parameters and append each individually.
       const urlParams = new URLSearchParams(window.location.search);
       urlParams.forEach((value, key) => {
         formData.append(key, value);
       });
   
+      // Send the POST request.
       fetch(webhookUrl, {
         method: "POST",
         body: formData
       })
       .then(response => {
         if (response.ok) {
+          console.log("Webhook sent successfully!");
+          // Build the redirect URL and append the same query parameters.
           const redirectUrl = new URL("https://phasefour.zapier.app/thank-you");
           urlParams.forEach((value, key) => {
             redirectUrl.searchParams.append(key, value);
