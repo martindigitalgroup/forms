@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Feedback</title>
   <style>
     /* General styling */
@@ -12,8 +12,15 @@
       margin: 20px;
       position: relative;
       color: #3f3f3f;
+      background-color: #D2DBDB; /* Page background */
     }
 
+    /* Extra padding above the title */
+    h1 {
+      padding-top: 30px;
+    }
+
+    /* Container for the SVG feedback options */
     #responses {
       width: 100%;
       max-width: 600px;
@@ -22,6 +29,15 @@
       position: relative;
     }
 
+    /* Center the SVG horizontally */
+    #responses svg {
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* SVG and feedback option styles */
     .feedback-option {
       transform-origin: center;
       transition: transform 0.2s ease;
@@ -59,6 +75,7 @@
       filter: grayscale(100%) brightness(96%);
     }
 
+    /* Submit button styling */
     #submitButton {
       position: absolute;
       top: calc(50% + 120px);
@@ -88,30 +105,19 @@
   </style>
 </head>
 <body>
-  <h1>How are you feeling about the EMR coming to your site?!!</h1>
+  <!-- The heading text will be updated dynamically -->
+  <h1 id="mainHeading">How are you feeling about the EMR coming to your site?</h1>
 
   <div id="responses">
     <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 840 437">
       <defs>
         <style>
-          .cls-1 {
-            fill: #d1edef;
-          }
-          .cls-2 {
-            fill: #3f3f3f;
-          }
-          .cls-3 {
-            fill: #65bfc6;
-          }
-          .cls-4 {
-            fill: #b8e2e6;
-          }
-          .cls-5 {
-            fill: #88ced3;
-          }
-          .cls-6 {
-            fill: #effafb;
-          }
+          .cls-1 { fill: #d1edef; }
+          .cls-2 { fill: #3f3f3f; }
+          .cls-3 { fill: #65bfc6; }
+          .cls-4 { fill: #b8e2e6; }
+          .cls-5 { fill: #88ced3; }
+          .cls-6 { fill: #effafb; }
         </style>
       </defs>
       <g id="Layer_1-2" data-name="Layer 1">
@@ -169,99 +175,95 @@
   <button id="submitButton" onclick="submitResponse()" disabled>Submit</button>
 
   <script>
+    // Update the heading based on the URL query parameter "site"
+    document.addEventListener("DOMContentLoaded", () => {
+      const params = new URLSearchParams(window.location.search);
+      // If "site" exists, use it; otherwise, default to "your site"
+      const siteName = params.get("site") || "your site";
+      const heading = document.getElementById("mainHeading");
+      heading.textContent = `How are you feeling about the EMR coming to ${siteName}?`;
+    });
+
     let selectedResponse = null;
 
     function selectResponse(response) {
       const selectedGroup = document.getElementById(response.toLowerCase());
-
-      // Deselect if clicking the same option
+      
+      // Toggle deselection if clicking the same option.
       if (selectedResponse === response) {
         selectedResponse = null;
         document.querySelectorAll('.feedback-option').forEach(option => {
           option.classList.remove('selected', 'grayscale');
         });
-        const submitButton = document.getElementById('submitButton');
-        submitButton.disabled = true;
+        document.getElementById('submitButton').disabled = true;
         return;
       }
-
-      // Clear previous selection
+      
+      // Clear previous selection.
       document.querySelectorAll('.feedback-option').forEach(option => {
         option.classList.remove('selected', 'grayscale');
       });
-
-      // Mark the selected option
+      
+      // Mark the selected option.
       selectedResponse = response;
       selectedGroup.classList.add('selected');
-
-      // Apply grayscale to non-selected options
+      
+      // Apply grayscale to non-selected options.
       document.querySelectorAll('.feedback-option').forEach(option => {
         if (!option.classList.contains('selected')) {
           option.classList.add('grayscale');
         }
       });
-
-      // Enable the Submit button
+      
+      // Enable the Submit button.
       const submitButton = document.getElementById('submitButton');
       submitButton.disabled = false;
       submitButton.style.display = 'inline-block';
     }
 
-  function submitResponse() {
-    if (!selectedResponse) {
-      alert("Please select a response before submitting.");
-      return;
-    }
-  
-    const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/";
-    const formData = new URLSearchParams();
-  
-    // Append the selected response.
-    formData.append('response', selectedResponse);
-  
-    // Log the query string to see what the iframe sees.
-    console.log("window.location.search:", window.location.search);
-  
-    // Parse URL query parameters from the iframe's URL.
-    const urlParams = new URLSearchParams(window.location.search);
-  
-    // For each query parameter, append it individually.
-    urlParams.forEach((value, key) => {
-      console.log("Appending", key, ":", value);
-      formData.append(key, value);
-    });
-  
-    // For debugging: log the final payload string.
-    console.log("Final payload:", formData.toString());
-  
-    // Send the POST request.
-    fetch(webhookUrl, {
-      method: "POST",
-      body: formData
-    })
-    .then(response => {
-      if (response.ok) {
-        console.log("Webhook sent successfully!");
-  
-        // Build the redirect URL and append the same query parameters.
-        const redirectUrl = new URL("https://phasefour.zapier.app/thank-you");
-        urlParams.forEach((value, key) => {
-          redirectUrl.searchParams.append(key, value);
-        });
-        redirectUrl.searchParams.append('response', selectedResponse);
-  
-        window.location.href = redirectUrl.toString();
-      } else {
-        alert("There was an issue submitting your feedback. Please try again.");
-        console.error("Failed to send webhook");
+    function submitResponse() {
+      if (!selectedResponse) {
+        alert("Please select a response before submitting.");
+        return;
       }
-    })
-    .catch(err => {
-      alert("An error occurred while submitting your feedback.");
-      console.error("Error sending webhook:", err);
-    });
-  }
-
+  
+      const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/";
+      const formData = new URLSearchParams();
+  
+      // Append the selected response.
+      formData.append('response', selectedResponse);
+  
+      // Parse URL query parameters and append each individually.
+      const urlParams = new URLSearchParams(window.location.search);
+      urlParams.forEach((value, key) => {
+        formData.append(key, value);
+      });
+  
+      // Send the POST request.
+      fetch(webhookUrl, {
+        method: "POST",
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log("Webhook sent successfully!");
+          // Build the redirect URL and append the same query parameters.
+          const redirectUrl = new URL("https://phasefour.zapier.app/thank-you");
+          urlParams.forEach((value, key) => {
+            redirectUrl.searchParams.append(key, value);
+          });
+          redirectUrl.searchParams.append('response', selectedResponse);
+          window.location.href = redirectUrl.toString();
+        } else {
+          alert("There was an issue submitting your feedback. Please try again.");
+          console.error("Failed to send webhook");
+        }
+      })
+      .catch(err => {
+        alert("An error occurred while submitting your feedback.");
+        console.error("Error sending webhook:", err);
+      });
+    }
   </script>
 </body>
 </html>
