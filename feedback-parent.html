@@ -207,51 +207,52 @@
       submitButton.style.display = 'inline-block';
     }
 
-    function submitResponse() {
-      if (!selectedResponse) {
-        alert("Please select a response before submitting.");
-        return;
-      }
+function submitResponse() {
+  if (!selectedResponse) {
+    alert("Please select a response before submitting.");
+    return;
+  }
 
-      const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/";
-      // Use URLSearchParams for a URL-encoded payload.
-      const formData = new URLSearchParams();
-      formData.append('response', selectedResponse);
+  const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/";
+  const formData = new URLSearchParams();
 
-      // Package up the query parameters into an object.
-      const urlParams = new URLSearchParams(window.location.search);
-      let qsObj = {};
+  // Append the selected response.
+  formData.append('response', selectedResponse);
+
+  // Parse URL query parameters and append each individually.
+  const urlParams = new URLSearchParams(window.location.search);
+  urlParams.forEach((value, key) => {
+    // Append the parameter even if value is blank.
+    formData.append(key, value);
+  });
+
+  // Send the POST request.
+  fetch(webhookUrl, {
+    method: "POST",
+    body: formData
+  })
+  .then(response => {
+    if (response.ok) {
+      console.log("Webhook sent successfully!");
+
+      // Build the redirect URL and append the same query parameters.
+      const redirectUrl = new URL("https://phasefour.zapier.app/thank-you");
       urlParams.forEach((value, key) => {
-        qsObj[key] = value;
+        redirectUrl.searchParams.append(key, value);
       });
-      // Append the querystring as a JSON string.
-      formData.append('querystring', JSON.stringify(qsObj));
-
-      // Send the POST request.
-      fetch(webhookUrl, {
-        method: "POST",
-        body: formData
-      })
-      .then(response => {
-        if (response.ok) {
-          console.log("Webhook sent successfully!");
-          // Build the redirect URL (adding the query parameters and selected response)
-          const redirectUrl = new URL("https://phasefour.zapier.app/thank-you");
-          urlParams.forEach((value, key) => {
-            redirectUrl.searchParams.append(key, value);
-          });
-          redirectUrl.searchParams.append('response', selectedResponse);
-          window.location.href = redirectUrl.toString();
-        } else {
-          alert("There was an issue submitting your feedback. Please try again.");
-          console.error("Failed to send webhook");
-        }
-      })
-      .catch(err => {
-        alert("An error occurred while submitting your feedback.");
-        console.error("Error sending webhook:", err);
-      });
+      redirectUrl.searchParams.append('response', selectedResponse);
+      window.location.href = redirectUrl.toString();
+    } else {
+      alert("There was an issue submitting your feedback. Please try again.");
+      console.error("Failed to send webhook");
     }
+  })
+  .catch(err => {
+    alert("An error occurred while submitting your feedback.");
+    console.error("Error sending webhook:", err);
+  });
+}
+
   </script>
 </body>
 </html>
