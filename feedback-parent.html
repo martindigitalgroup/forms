@@ -29,6 +29,7 @@
       margin: 0 auto;
       padding: 15px;
       position: relative;
+      /* For desktop, we simply center the SVG with block margins */
     }
 
     /* Ensure the SVG is centered horizontally */
@@ -37,25 +38,39 @@
       margin: 0 auto;
       max-width: 100%;
       height: auto;
+      /* Use preserveAspectRatio to center its internal content */
+      /* (this attribute is also added directly to the <svg> tag below) */
     }
 
-    /* Mobile-specific styles */
-    @media only screen and (max-width: 600px) {
-      #responses {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 300px;  /* Prevent the container from collapsing vertically */
-      }
-      #responses svg {
-        width: 90%;         /* Use a percentage of the container width */
-        max-width: 600px;    /* Still allow it to scale up to 600px if space allows */
-        height: auto;
-        flex-shrink: 0;      /* Prevent shrinking */
-      }
+    /* Submit button styling (desktop version) */
+    #submitButton {
+      position: absolute;
+      top: calc(50% + 120px);
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 10px 20px;
+      background-color: #2DAAB3;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: Calibri, sans-serif;
+      font-size: 15pt;
+      font-weight: bold;
+      transition: background-color 0.2s ease, transform 0.2s ease;
     }
 
-    /* SVG and feedback option styles */
+    #submitButton:hover {
+      background-color: #5CCED6;
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+
+    #submitButton:disabled {
+      background-color: #A4B5B6;
+      cursor: not-allowed;
+    }
+
+    /* Feedback option styling (common for both desktop and mobile) */
     .feedback-option {
       transform-origin: center;
       transition: transform 0.2s ease;
@@ -93,32 +108,31 @@
       filter: grayscale(100%) brightness(96%);
     }
 
-    /* Submit button styling */
-    #submitButton {
-      position: absolute;
-      top: calc(50% + 120px);
-      left: 50%;
-      transform: translate(-50%, -50%);
-      padding: 10px 20px;
-      background-color: #2DAAB3;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-family: Calibri, sans-serif;
-      font-size: 15pt;
-      font-weight: bold;
-      transition: background-color 0.2s ease, transform 0.2s ease;
-    }
-
-    #submitButton:hover {
-      background-color: #5CCED6;
-      transform: translate(-50%, -50%) scale(1.05);
-    }
-
-    #submitButton:disabled {
-      background-color: #A4B5B6;
-      cursor: not-allowed;
+    /* Mobile-specific adjustments */
+    @media only screen and (max-width: 600px) {
+      /* Stack container children vertically */
+      #responses {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px; /* Ensure enough vertical space */
+      }
+      #responses svg {
+        width: 90%;         /* Scale the SVG to 90% of container width */
+        max-width: 600px;
+        height: auto;
+        flex-shrink: 0;
+      }
+      /* Remove absolute positioning from the submit button on mobile */
+      #submitButton {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        margin: 20px auto 0 auto; /* Place below the SVG with some top margin */
+        display: block;
+      }
     }
   </style>
 </head>
@@ -127,8 +141,11 @@
   <h1 id="mainHeading">How are you feeling about the EMR coming to your site?</h1>
 
   <div id="responses">
-    <!-- The SVG now includes preserveAspectRatio to center its internal content -->
-    <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 840 437" preserveAspectRatio="xMidYMid meet">
+    <!-- Note the preserveAspectRatio attribute added to center the SVG's internal content -->
+    <svg id="Layer_2" data-name="Layer 2" 
+         xmlns="http://www.w3.org/2000/svg" 
+         viewBox="-20 -20 840 437" 
+         preserveAspectRatio="xMidYMid meet">
       <defs>
         <style>
           .cls-1 { fill: #d1edef; }
