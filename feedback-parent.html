@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Feedback</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="Expansion-Favicon.png" />
   <style>
     /* General styling */
     body {
@@ -27,6 +29,7 @@
       margin: 0 auto;
       padding: 15px;
       position: relative;
+      /* On larger screens, margin auto should center the container */
     }
 
     /* Center the SVG horizontally */
@@ -35,6 +38,14 @@
       margin: 0 auto;
       max-width: 100%;
       height: auto;
+    }
+
+    /* For mobile devices, use flexbox to ensure centering */
+    @media only screen and (max-width: 600px) {
+      #responses {
+        display: flex;
+        justify-content: center;
+      }
     }
 
     /* SVG and feedback option styles */
@@ -105,7 +116,7 @@
   </style>
 </head>
 <body>
-  <!-- The heading text will be updated dynamically -->
+  <!-- Dynamic heading will be updated via JavaScript -->
   <h1 id="mainHeading">How are you feeling about the EMR coming to your site?</h1>
 
   <div id="responses">
@@ -178,7 +189,7 @@
     // Update the heading based on the URL query parameter "site"
     document.addEventListener("DOMContentLoaded", () => {
       const params = new URLSearchParams(window.location.search);
-      // If "site" exists, use it; otherwise, default to "your site"
+      // Use the "site" parameter if it exists; default to "your site"
       const siteName = params.get("site") || "your site";
       const heading = document.getElementById("mainHeading");
       heading.textContent = `How are you feeling about the EMR coming to ${siteName}?`;
@@ -189,7 +200,7 @@
     function selectResponse(response) {
       const selectedGroup = document.getElementById(response.toLowerCase());
       
-      // Toggle deselection if clicking the same option.
+      // Toggle deselection if the same option is clicked.
       if (selectedResponse === response) {
         selectedResponse = null;
         document.querySelectorAll('.feedback-option').forEach(option => {
