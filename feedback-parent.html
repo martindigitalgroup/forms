@@ -39,12 +39,19 @@
       height: auto;
     }
 
-    /* Mobile-specific centering using flexbox (optional) */
+    /* Mobile-specific styles */
     @media only screen and (max-width: 600px) {
       #responses {
         display: flex;
         justify-content: center;
         align-items: center;
+        min-height: 300px;  /* Prevent the container from collapsing vertically */
+      }
+      #responses svg {
+        width: 90%;         /* Use a percentage of the container width */
+        max-width: 600px;    /* Still allow it to scale up to 600px if space allows */
+        height: auto;
+        flex-shrink: 0;      /* Prevent shrinking */
       }
     }
 
@@ -120,11 +127,8 @@
   <h1 id="mainHeading">How are you feeling about the EMR coming to your site?</h1>
 
   <div id="responses">
-    <!-- Note the preserveAspectRatio attribute added below -->
-    <svg id="Layer_2" data-name="Layer 2" 
-         xmlns="http://www.w3.org/2000/svg" 
-         viewBox="-20 -20 840 437" 
-         preserveAspectRatio="xMidYMid meet">
+    <!-- The SVG now includes preserveAspectRatio to center its internal content -->
+    <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 840 437" preserveAspectRatio="xMidYMid meet">
       <defs>
         <style>
           .cls-1 { fill: #d1edef; }
@@ -201,6 +205,7 @@
 
     function selectResponse(response) {
       const selectedGroup = document.getElementById(response.toLowerCase());
+      
       // Toggle deselection if clicking the same option.
       if (selectedResponse === response) {
         selectedResponse = null;
@@ -210,18 +215,22 @@
         document.getElementById('submitButton').disabled = true;
         return;
       }
+      
       // Clear previous selection.
       document.querySelectorAll('.feedback-option').forEach(option => {
         option.classList.remove('selected', 'grayscale');
       });
+      
       selectedResponse = response;
       selectedGroup.classList.add('selected');
+      
       // Apply grayscale to non-selected options.
       document.querySelectorAll('.feedback-option').forEach(option => {
         if (!option.classList.contains('selected')) {
           option.classList.add('grayscale');
         }
       });
+      
       // Enable the Submit button.
       const submitButton = document.getElementById('submitButton');
       submitButton.disabled = false;
@@ -236,9 +245,11 @@
   
       const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/";
       const formData = new URLSearchParams();
+  
+      // Append the selected response.
       formData.append('response', selectedResponse);
   
-      // Append URL query parameters individually.
+      // Parse URL query parameters and append each individually.
       const urlParams = new URLSearchParams(window.location.search);
       urlParams.forEach((value, key) => {
         formData.append(key, value);
@@ -252,7 +263,7 @@
       .then(response => {
         if (response.ok) {
           console.log("Webhook sent successfully!");
-          // Build the redirect URL and append query parameters.
+          // Build the redirect URL and append the same query parameters.
           const redirectUrl = new URL("https://phasefour.zapier.app/thank-you");
           urlParams.forEach((value, key) => {
             redirectUrl.searchParams.append(key, value);
