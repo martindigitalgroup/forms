@@ -207,51 +207,60 @@
       submitButton.style.display = 'inline-block';
     }
 
-function submitResponse() {
-  if (!selectedResponse) {
-    alert("Please select a response before submitting.");
-    return;
-  }
-
-  const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/";
-  const formData = new URLSearchParams();
-
-  // Append the selected response.
-  formData.append('response', selectedResponse);
-
-  // Parse URL query parameters and append each individually.
-  const urlParams = new URLSearchParams(window.location.search);
-  urlParams.forEach((value, key) => {
-    // Append the parameter even if value is blank.
-    formData.append(key, value);
-  });
-
-  // Send the POST request.
-  fetch(webhookUrl, {
-    method: "POST",
-    body: formData
-  })
-  .then(response => {
-    if (response.ok) {
-      console.log("Webhook sent successfully!");
-
-      // Build the redirect URL and append the same query parameters.
-      const redirectUrl = new URL("https://phasefour.zapier.app/thank-you");
-      urlParams.forEach((value, key) => {
-        redirectUrl.searchParams.append(key, value);
-      });
-      redirectUrl.searchParams.append('response', selectedResponse);
-      window.location.href = redirectUrl.toString();
-    } else {
-      alert("There was an issue submitting your feedback. Please try again.");
-      console.error("Failed to send webhook");
+  function submitResponse() {
+    if (!selectedResponse) {
+      alert("Please select a response before submitting.");
+      return;
     }
-  })
-  .catch(err => {
-    alert("An error occurred while submitting your feedback.");
-    console.error("Error sending webhook:", err);
-  });
-}
+  
+    const webhookUrl = "https://hooks.zapier.com/hooks/catch/15554156/2at36b2/";
+    const formData = new URLSearchParams();
+  
+    // Append the selected response.
+    formData.append('response', selectedResponse);
+  
+    // Log the query string to see what the iframe sees.
+    console.log("window.location.search:", window.location.search);
+  
+    // Parse URL query parameters from the iframe's URL.
+    const urlParams = new URLSearchParams(window.location.search);
+  
+    // For each query parameter, append it individually.
+    urlParams.forEach((value, key) => {
+      console.log("Appending", key, ":", value);
+      formData.append(key, value);
+    });
+  
+    // For debugging: log the final payload string.
+    console.log("Final payload:", formData.toString());
+  
+    // Send the POST request.
+    fetch(webhookUrl, {
+      method: "POST",
+      body: formData
+    })
+    .then(response => {
+      if (response.ok) {
+        console.log("Webhook sent successfully!");
+  
+        // Build the redirect URL and append the same query parameters.
+        const redirectUrl = new URL("https://phasefour.zapier.app/thank-you");
+        urlParams.forEach((value, key) => {
+          redirectUrl.searchParams.append(key, value);
+        });
+        redirectUrl.searchParams.append('response', selectedResponse);
+  
+        window.location.href = redirectUrl.toString();
+      } else {
+        alert("There was an issue submitting your feedback. Please try again.");
+        console.error("Failed to send webhook");
+      }
+    })
+    .catch(err => {
+      alert("An error occurred while submitting your feedback.");
+      console.error("Error sending webhook:", err);
+    });
+  }
 
   </script>
 </body>
