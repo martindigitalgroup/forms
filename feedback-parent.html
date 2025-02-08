@@ -39,7 +39,7 @@
       height: auto;
     }
 
-    /* Desktop Submit button styling */
+    /* Desktop (default) Submit button styling */
     #submitButton {
       position: absolute;
       top: calc(50% + 120px);
@@ -55,7 +55,6 @@
       font-size: 15pt;
       font-weight: bold;
       transition: background-color 0.2s ease, transform 0.2s ease;
-      /* Disable tap highlight */
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -107,7 +106,7 @@
       filter: grayscale(100%) brightness(96%);
     }
 
-    /* Mobile-specific adjustments */
+    /* Mobile-specific adjustments for container only */
     @media only screen and (max-width: 600px) {
       #responses {
         display: flex;
@@ -115,32 +114,24 @@
         align-items: center;
         justify-content: center;
         min-height: 300px;  /* Ensure enough vertical space */
-        transform: translateX(-3.6vw);  /* Offset container 3.6% to the left */
+        transform: translateX(-3.6vw);  /* Shift container 3.6% to the left */
       }
       #responses svg {
-        width: 100%;        /* Use 100% of container width */
+        width: 100%;        /* Keep the SVG at 100% container width */
         max-width: 600px;
         height: auto;
         flex-shrink: 0;
       }
-      /* Remove absolute positioning for the submit button on mobile */
-      #submitButton {
-        position: relative;
-        top: auto;
-        left: auto;
-        transform: none;
-        margin: 20px auto 0 auto; /* Place below the SVG with some top margin */
-        display: block;
-      }
-      /* Override active state to prevent jump on tap */
+      /* Override active state on mobile to prevent button jump,
+         but keep the absolute positioning unchanged. */
       #submitButton:active {
-        transform: none !important;
+        transform: translate(-50%, -50%) !important;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Dynamic heading will be updated via JavaScript -->
+  <!-- Dynamic heading updated via JavaScript -->
   <h1 id="mainHeading">How are you feeling about the EMR coming to your site?</h1>
 
   <div id="responses">
@@ -149,15 +140,6 @@
          xmlns="http://www.w3.org/2000/svg" 
          viewBox="-20 -20 840 437" 
          preserveAspectRatio="xMidYMid meet">
-      <defs>
-        <style>
-          .cls-1 { fill: #d1edef; }
-          .cls-2 { fill: #3f3f3f; }
-          .cls-3 { fill: #65bfc6; }
-          .cls-4 { fill: #b8e2e6; }
-          .cls-5 { fill: #88ced3; }
-          .cls-6 { fill: #effafb; }
-        </style>
       </defs>
       <g id="Layer_1-2" data-name="Layer 1">
         <g id="excited" class="feedback-option" onclick="selectResponse('Excited')">
@@ -210,7 +192,7 @@
     </svg>
   </div>
 
-  <!-- Submit button -->
+  <!-- Submit button remains absolutely positioned as before -->
   <button id="submitButton" onclick="submitResponse()" disabled>Submit</button>
 
   <script>
