@@ -29,7 +29,6 @@
       margin: 0 auto;
       padding: 15px;
       position: relative;
-      /* For desktop, we simply center the SVG with block margins */
     }
 
     /* Ensure the SVG is centered horizontally */
@@ -38,11 +37,9 @@
       margin: 0 auto;
       max-width: 100%;
       height: auto;
-      /* Use preserveAspectRatio to center its internal content */
-      /* (this attribute is also added directly to the <svg> tag below) */
     }
 
-    /* Submit button styling (desktop version) */
+    /* Desktop Submit button styling */
     #submitButton {
       position: absolute;
       top: calc(50% + 120px);
@@ -70,7 +67,7 @@
       cursor: not-allowed;
     }
 
-    /* Feedback option styling (common for both desktop and mobile) */
+    /* SVG and feedback option styles */
     .feedback-option {
       transform-origin: center;
       transition: transform 0.2s ease;
@@ -85,7 +82,7 @@
     }
 
     .feedback-option.selected path:not(.cls-2) {
-      fill: #d4f4dd; /* Match hover green */
+      fill: #d4f4dd;
     }
 
     .feedback-option.grayscale#crying path:not(.cls-2) {
@@ -110,16 +107,16 @@
 
     /* Mobile-specific adjustments */
     @media only screen and (max-width: 600px) {
-      /* Stack container children vertically */
       #responses {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 300px; /* Ensure enough vertical space */
+        min-height: 300px;  /* Ensure enough vertical space */
+        transform: translateX(-3.6vw);  /* Shift container 3.6% left */
       }
       #responses svg {
-        width: 90%;         /* Scale the SVG to 90% of container width */
+        width: 100%;        /* Use 100% of the container width */
         max-width: 600px;
         height: auto;
         flex-shrink: 0;
@@ -137,11 +134,11 @@
   </style>
 </head>
 <body>
-  <!-- Dynamic heading will be updated via JavaScript -->
+  <!-- Dynamic heading updated via JavaScript -->
   <h1 id="mainHeading">How are you feeling about the EMR coming to your site?</h1>
 
   <div id="responses">
-    <!-- Note the preserveAspectRatio attribute added to center the SVG's internal content -->
+    <!-- The SVG includes preserveAspectRatio to center its internal content -->
     <svg id="Layer_2" data-name="Layer 2" 
          xmlns="http://www.w3.org/2000/svg" 
          viewBox="-20 -20 840 437" 
