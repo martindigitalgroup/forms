@@ -94,8 +94,9 @@
     #arrowIndicator {
       transition: transform 0.3s ease;
       transform: rotate(0deg);
-      /* Adjust transform-origin as needed so the arrow “pivots” from its tip */
-      transform-origin: 50% 50%;
+      /* Anchor the arrow’s pivot so its X/Y position remains fixed during rotation.
+         Adjust these pixel values as needed for your SVG. */
+      transform-origin: 400px 405px;
     }
     /* Mobile-specific adjustments */
     @media only screen and (max-width: 600px) {
@@ -191,7 +192,7 @@
           <path class="cls-3" d="M225.69,276.9l-151-109.71C28.21,232.01.63,311.3,0,397h187.01c.51-44.67,14.74-86.04,38.67-120.1Z"/>
           <path class="cls-2" d="M112.78,257l5.37.67c22.38,3.69,40.45,22.24,43.39,44.77.16,1.23.12,2.58.44,3.76v6.56c-.32,1.18-.28,2.53-.44,3.76-3.78,28.57-30.5,48.81-59.08,45.01-23.09-3.07-41.98-21.88-45-45.01-.16-1.23-.12-2.58-.44-3.76"/>
         </g>
-        <!-- ARROW INDICATOR (moved out of any feedback group) -->
+        <!-- ARROW INDICATOR -->
         <g id="arrowIndicator">
           <rect class="cls-6" x="400.98" y="401" width="233" height="9"/>
           <path class="cls-4" d="M399.14,365.78c-.49,0-.98.01-2.16.04v-.02l.48.03c-1.65.09-3.27.31-4.84.65l-224.57,30.05,225.11,30.49c1.15.23,2.33.38,3.53.48l1.29.14v-.07c.22.02.69.04,1.16.04,17.07,0,30.91-13.84,30.91-30.91,0-17.07-13.84-30.91-30.91-30.91ZM400.57,411.78c-8.07,0-14.62-6.54-14.62-14.62,0-8.07,6.54-14.62,14.62-14.62s14.62,6.54,14.62,14.62c0,8.07-6.54,14.62-14.62,14.62Z"/>
