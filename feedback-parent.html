@@ -63,7 +63,7 @@
       fill: var(--grayscale-color);
     }
 
-    /* Default state: original color is used when an option is neither selected nor grayscaled */
+    /* Default state: use original color when an option is neither selected nor grayscaled */
     .feedback-option:not(.selected):not(.grayscale) path:not(.cls-2):not(.arrow) {
       fill: var(--original-color);
     }
@@ -89,7 +89,7 @@
   </style>
 </head>
 <body>
-  <!-- The heading will be updated based on the URL parameter 'site' -->
+  <!-- The heading is updated based on the URL parameter 'site' -->
   <h1>How are you feeling about the EMR coming to your site?</h1>
   <div id="responses">
     <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 799.96 427.64">
@@ -144,7 +144,7 @@
             <path class="cls-2" d="M675.1,289.48c7.08-.85,12.94,4.11,11.68,11.49-.43,2.53-3.33,3.61-5.38,2s-.46-4.05-1.49-5.69c-1.25-1.98-6.22-1.68-6.6.67-.26,1.67.47,3.14-.86,4.68-1.81,2.09-5.33,1.05-5.69-1.63-.79-5.8,2.37-10.8,8.34-11.52Z"/>
             <path class="cls-2" d="M710.36,289.48c7.33-.88,12.95,4.14,11.68,11.69-.41,2.45-3.65,3.41-5.47,1.67-2.1-2,.09-4.93-2.13-6.28-1.45-.89-4.36-.87-5.45.59-1.3,1.74.94,5.56-2.94,6.5-4.56,1.1-4.57-5.22-3.6-8.11,1.06-3.15,4.65-5.66,7.9-6.05Z"/>
           </g>
-          <!-- Arrow (note the 'arrow' class on its elements) -->
+          <!-- Arrow (with the "arrow" class on its elements) -->
           <g id="arrowIndicator">
             <rect class="cls-6 arrow" x="400.98" y="401" width="233" height="9"/>
             <path class="cls-4 arrow" d="M399.14,365.78c-.49,0-.98.01-2.16.04v-.02l.48.03c-1.65.09-3.27.31-4.84.65l-224.57,30.05,225.11,30.49c1.15.23,2.33.38,3.53.48l1.29.14v-.07c.22.02.69.04,1.16.04,17.07,0,30.91-13.84,30.91-30.91,0-17.07-13.84-30.91-30.91-30.91ZM400.57,411.78c-8.07,0-14.62-6.54-14.62-14.62,0-8.07,6.54-14.62,14.62-14.62s14.62,6.54,14.62,14.62c0,8.07-6.54,14.62-14.62,14.62Z"/>
@@ -237,14 +237,14 @@
       }
     }
 
-    // --- Submit Response and Send Webhook ---
+    // --- Submit Response, Send Webhook, and Redirect ---
     function submitResponse() {
       if (!selectedResponse) {
         alert("Please select a response before submitting.");
         return;
       }
       
-      // Prepare data to send in the webhook.
+      // Prepare the data to send in the webhook.
       const data = {
         response:      selectedResponse,
         site:          siteParam,
@@ -273,11 +273,27 @@
       })
       .then(result => {
         console.log("Webhook sent successfully:", result);
-        alert(`Response submitted: ${selectedResponse}`);
       })
       .catch(error => {
         console.error("Error sending webhook:", error);
-        alert(`Response submitted: ${selectedResponse} (Webhook error)`);
+      })
+      .finally(() => {
+        // Build the query string for redirection.
+        const redirectParams = new URLSearchParams();
+        if (siteParam)        redirectParams.set('site', siteParam);
+        if (locationParam)    redirectParams.set('location', locationParam);
+        if (craftGroupParam)  redirectParams.set('craft group', craftGroupParam);
+        if (formatParam)      redirectParams.set('format', formatParam);
+        if (costParam)        redirectParams.set('cost', costParam);
+        if (linkedEventParam) redirectParams.set('linked-event', linkedEventParam);
+        if (otherParam)       redirectParams.set('other', otherParam);
+        if (linkIdParam)      redirectParams.set('link-id', linkIdParam);
+
+        const queryString = redirectParams.toString();
+        const redirectUrl = "https://phasefour.zapier.app/thank-you" + (queryString ? "?" + queryString : "");
+        
+        // Redirect the user.
+        window.location.href = redirectUrl;
       });
     }
   </script>
