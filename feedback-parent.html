@@ -278,26 +278,28 @@
         console.error("Error sending webhook:", error);
       })
       .finally(() => {
-// Build the query string for redirection.
-const redirectParams = new URLSearchParams();
-if (siteParam)        redirectParams.set('site', siteParam);
-if (locationParam)    redirectParams.set('location', locationParam);
-if (craftGroupParam)  redirectParams.set('craft group', craftGroupParam);
-if (formatParam)      redirectParams.set('format', formatParam);
-if (costParam)        redirectParams.set('cost', costParam);
-if (linkedEventParam) redirectParams.set('linked-event', linkedEventParam);
-if (otherParam)       redirectParams.set('other', otherParam);
-if (linkIdParam)      redirectParams.set('link-id', linkIdParam);
+        // Delay the redirect to ensure the webhook data is sent.
+        setTimeout(() => {
+          // Build the query string for redirection.
+          const redirectParams = new URLSearchParams();
+          if (siteParam)        redirectParams.set('site', siteParam);
+          if (locationParam)    redirectParams.set('location', locationParam);
+          if (craftGroupParam)  redirectParams.set('craft group', craftGroupParam);
+          if (formatParam)      redirectParams.set('format', formatParam);
+          if (costParam)        redirectParams.set('cost', costParam);
+          if (linkedEventParam) redirectParams.set('linked-event', linkedEventParam);
+          if (otherParam)       redirectParams.set('other', otherParam);
+          if (linkIdParam)      redirectParams.set('link-id', linkIdParam);
 
-// Append the selected response.
-redirectParams.set('response', selectedResponse);
+          // Append the selected response.
+          redirectParams.set('response', selectedResponse);
 
-const queryString = redirectParams.toString();
-const redirectUrl = "https://phasefour.zapier.app/thank-you" + (queryString ? "?" + queryString : "");
-
-// Redirect the user.
-window.location.href = redirectUrl;
-
+          const queryString = redirectParams.toString();
+          const redirectUrl = "https://phasefour.zapier.app/thank-you" + (queryString ? "?" + queryString : "");
+          
+          // Redirect the user.
+          window.location.href = redirectUrl;
+        }, 500);  // 500ms delay
       });
     }
   </script>
