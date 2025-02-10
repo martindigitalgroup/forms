@@ -238,70 +238,76 @@
     }
 
     // --- Submit Response, Send Webhook, and Redirect ---
-    function submitResponse() {
-      if (!selectedResponse) {
-        alert("Please select a response before submitting.");
-        return;
-      }
-      
-      // Prepare the data to send in the webhook.
-      const data = {
-        response:      selectedResponse,
-        site:          siteParam,
-        location:      locationParam,
-        craftGroup:    craftGroupParam,
-        format:        formatParam,
-        cost:          costParam,
-        linkedEvent:   linkedEventParam,
-        other:         otherParam,
-        linkId:        linkIdParam
-      };
+function submitResponse() {
+  if (!selectedResponse) {
+    alert("Please select a response before submitting.");
+    return;
+  }
+  
+  // Prepare the data to send in the webhook.
+  const data = {
+    response:      selectedResponse,
+    site:          siteParam,
+    location:      locationParam,
+    craftGroup:    craftGroupParam,
+    format:        formatParam,
+    cost:          costParam,
+    linkedEvent:   linkedEventParam,
+    other:         otherParam,
+    linkId:        linkIdParam
+  };
 
-      // Send the webhook via a POST request.
-      fetch("https://hooks.zapier.com/hooks/catch/15554156/2at36b2/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.text();
-      })
-      .then(result => {
-        console.log("Webhook sent successfully:", result);
-      })
-      .catch(error => {
-        console.error("Error sending webhook:", error);
-      })
-      .finally(() => {
-        // Delay the redirect to ensure the webhook data is sent.
-        setTimeout(() => {
-          // Build the query string for redirection.
-          const redirectParams = new URLSearchParams();
-          if (siteParam)        redirectParams.set('site', siteParam);
-          if (locationParam)    redirectParams.set('location', locationParam);
-          if (craftGroupParam)  redirectParams.set('craft group', craftGroupParam);
-          if (formatParam)      redirectParams.set('format', formatParam);
-          if (costParam)        redirectParams.set('cost', costParam);
-          if (linkedEventParam) redirectParams.set('linked-event', linkedEventParam);
-          if (otherParam)       redirectParams.set('other', otherParam);
-          if (linkIdParam)      redirectParams.set('link-id', linkIdParam);
+  // Log the data to be sent so you can inspect it in the browser's console.
+  console.log("Data to be sent:", JSON.stringify(data));
 
-          // Append the selected response.
-          redirectParams.set('response', selectedResponse);
-
-          const queryString = redirectParams.toString();
-          const redirectUrl = "https://phasefour.zapier.app/thank-you" + (queryString ? "?" + queryString : "");
-          
-          // Redirect the user.
-          window.location.href = redirectUrl;
-        }, 500);  // 500ms delay
-      });
+  // Send the webhook via a POST request.
+  fetch("https://hooks.zapier.com/hooks/catch/15554156/2at36b2/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
     }
+    return response.text();
+  })
+  .then(result => {
+    console.log("Webhook sent successfully:", result);
+  })
+  .catch(error => {
+    console.error("Error sending webhook:", error);
+  })
+  .finally(() => {
+    // Increase the delay before redirecting to 1000ms
+    console.log("Delaying redirect for 1000ms to allow webhook to complete...");
+    setTimeout(() => {
+      // Build the query string for redirection.
+      const redirectParams = new URLSearchParams();
+      if (siteParam)        redirectParams.set('site', siteParam);
+      if (locationParam)    redirectParams.set('location', locationParam);
+      if (craftGroupParam)  redirectParams.set('craft group', craftGroupParam);
+      if (formatParam)      redirectParams.set('format', formatParam);
+      if (costParam)        redirectParams.set('cost', costParam);
+      if (linkedEventParam) redirectParams.set('linked-event', linkedEventParam);
+      if (otherParam)       redirectParams.set('other', otherParam);
+      if (linkIdParam)      redirectParams.set('link-id', linkIdParam);
+
+      // Append the selected response.
+      redirectParams.set('response', selectedResponse);
+
+      const queryString = redirectParams.toString();
+      const redirectUrl = "https://phasefour.zapier.app/thank-you" + (queryString ? "?" + queryString : "");
+      
+      // Log the final redirect URL for debugging.
+      console.log("Redirecting to:", redirectUrl);
+      window.location.href = redirectUrl;
+    }, 1000);  // 1000ms delay
+  });
+}
+
   </script>
 </body>
 </html>
