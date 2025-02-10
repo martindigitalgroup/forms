@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Feedback</title>
+  <!-- Favicon -->
+  <link rel="icon" href="https://feedback.emr-gha.link/Expansion-Favicon.png" type="image/png">
   <style>
     body {
       font-family: Calibri, sans-serif;
@@ -89,7 +91,7 @@
   </style>
 </head>
 <body>
-  <!-- The heading is updated based on the URL parameter 'site' -->
+  <!-- The heading will update based on the URL parameter 'site' -->
   <h1>How are you feeling about the EMR coming to your site?</h1>
   <div id="responses">
     <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 799.96 427.64">
@@ -238,80 +240,84 @@
     }
 
     // --- Submit Response, Send Webhook, and Redirect ---
-function submitResponse() {
-  if (!selectedResponse) {
-    alert("Please select a response before submitting.");
-    return;
-  }
-  
-  // Prepare the data to send in the webhook.
-  const data = {
-    response:      selectedResponse,
-    site:          siteParam,
-    location:      locationParam,
-    craftGroup:    craftGroupParam,
-    format:        formatParam,
-    cost:          costParam,
-    linkedEvent:   linkedEventParam,
-    other:         otherParam,
-    linkId:        linkIdParam
-  };
+    function submitResponse() {
+      if (!selectedResponse) {
+        alert("Please select a response before submitting.");
+        return;
+      }
+      
+      // Prepare the data to send in the webhook.
+      const data = {
+        response:      selectedResponse,
+        site:          siteParam,
+        location:      locationParam,
+        craftGroup:    craftGroupParam,
+        format:        formatParam,
+        cost:          costParam,
+        linkedEvent:   linkedEventParam,
+        other:         otherParam,
+        linkId:        linkIdParam
+      };
 
-  // Log the data to be sent so you can inspect it in the browser's console.
-  console.log("Data to be sent:", JSON.stringify(data));
+      // Log the data payload to the console for debugging.
+      console.log("Data to be sent:", JSON.stringify(data));
 
-  // First, try using navigator.sendBeacon.
-  let beaconSent = false;
-  if (navigator.sendBeacon) {
-    // Create a Blob from the data. Note: sendBeacon typically sends data with a default content type.
-    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-    beaconSent = navigator.sendBeacon("https://hooks.zapier.com/hooks/catch/15554156/2at36b2/", blob);
-    console.log("sendBeacon result:", beaconSent);
-  }
+      // Try using navigator.sendBeacon first.
+      let beaconSent = false;
+      if (navigator.sendBeacon) {
+        const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+        beaconSent = navigator.sendBeacon("https://hooks.zapier.com/hooks/catch/15554156/2at36b2/", blob);
+        console.log("sendBeacon result:", beaconSent);
+      }
 
-  // If sendBeacon wasn't available or didn't send, use fetch with no-cors.
-  if (!beaconSent) {
-    console.log("Falling back to fetch with no-cors mode.");
-    fetch("https://hooks.zapier.com/hooks/catch/15554156/2at36b2/", {
-      method: "POST",
-      mode: 'no-cors', // no-cors mode prevents the preflight check, but makes the response opaque.
-      body: JSON.stringify(data)
-    })
-    .then(() => {
-      console.log("Webhook sent via fetch fallback.");
-    })
-    .catch(error => {
-      console.error("Error sending webhook via fetch fallback:", error);
-    });
-  }
+      // Fallback: If sendBeacon is not available or returns false, use fetch.
+      if (!beaconSent) {
+        console.log("Falling back to fetch with no-cors mode and credentials: 'omit'.");
+        fetch("https://hooks.zapier.com/hooks/catch/15554156/2at36b2/", {
+          method: "POST",
+          mode: 'no-cors',
+          credentials: 'omit',
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        })
+        .then(() => {
+          console.log("Webhook sent via fetch fallback.");
+        })
+        .catch(error => {
+          console.error("Error sending webhook via fetch fallback:", error);
+        });
+      }
 
-  // Increase the delay before redirecting to 1000ms to allow the request time to complete.
-  console.log("Delaying redirect for 1000ms to allow webhook to complete...");
-  setTimeout(() => {
-    // Build the query string for redirection.
-    const redirectParams = new URLSearchParams();
-    if (siteParam)        redirectParams.set('site', siteParam);
-    if (locationParam)    redirectParams.set('location', locationParam);
-    if (craftGroupParam)  redirectParams.set('craft group', craftGroupParam);
-    if (formatParam)      redirectParams.set('format', formatParam);
-    if (costParam)        redirectParams.set('cost', costParam);
-    if (linkedEventParam) redirectParams.set('linked-event', linkedEventParam);
-    if (otherParam)       redirectParams.set('other', otherParam);
-    if (linkIdParam)      redirectParams.set('link-id', linkIdParam);
+      // Delay the redirect to 1000ms to allow the request to complete.
+      console.log("Delaying redirect for 1000ms to allow webhook to complete...");
+      setTimeout(() => {
+        // Build the query string for redirection.
+        const redirectParams = new URLSearchParams();
+        if (siteParam)        redirectParams.set('site', siteParam);
+        if (locationParam)    redirectParams.set('location', locationParam);
+        if (craftGroupParam)  redirectParams.set('craft group', craftGroupParam);
+        if (formatParam)      redirectParams.set('format', formatParam);
+        if (costParam)        redirectParams.set('cost', costParam);
+        if (linkedEventParam) redirectParams.set('linked-event', linkedEventParam);
+        if (otherParam)       redirectParams.set('other', otherParam);
+        if (linkIdParam)      redirectParams.set('link-id', linkIdParam);
 
-    // Append the selected response.
-    redirectParams.set('response', selectedResponse);
+        // Append the selected response.
+        redirectParams.set('response', selectedResponse);
 
-    const queryString = redirectParams.toString();
-    const redirectUrl = "https://phasefour.zapier.app/thank-you" + (queryString ? "?" + queryString : "");
-    
-    // Log the final redirect URL for debugging.
-    console.log("Redirecting to:", redirectUrl);
-    window.location.href = redirectUrl;
-  }, 200);  // 200ms delay
-}
-
-
+        const queryString = redirectParams.toString();
+        const redirectUrl = "https://phasefour.zapier.app/thank-you" + (queryString ? "?" + queryString : "");
+        
+        // Log the final redirect URL for debugging.
+        console.log("Redirecting to:", redirectUrl);
+        window.location.href = redirectUrl;
+      }, 1000);  // 1000ms delay
+    }
   </script>
+  
+  <!-- Tracking pixel (invisible) -->
+  <img src="https://emr-gha.link/gbqYBukN19" alt="tracking pixel" style="display: none;" />
 </body>
 </html>
