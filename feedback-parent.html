@@ -269,7 +269,7 @@ function submitResponse() {
     if (response.ok) {
       console.log("Webhook sent successfully!");
       // Build the redirect URL and append the query parameters.
-      const redirectUrl = new URL("https://https://gippslandhealth.sharepoint.com/sites/EMRExpansion?site=sgh&value=testing");
+      const redirectUrl = new URL("https://gippslandhealth.sharepoint.com/sites/EMRExpansion?site=sgh&value=testing");
       urlParams.forEach((value, key) => {
         redirectUrl.searchParams.append(key, value);
       });
